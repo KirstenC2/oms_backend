@@ -1,22 +1,22 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { RolesService } from './roles.service';
 
 @Controller('roles')
 export class RolesController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly rolesService: RolesService) {}
 
   @Post()
   async create(@Body() body: { name: string }) {
-    return this.prisma.role.create({ data: { name: body.name } });
+    return this.rolesService.create(body.name);
   }
 
   @Get()
   async findAll() {
-    return this.prisma.role.findMany();
+    return this.rolesService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.prisma.role.findUnique({ where: { id } });
+    return this.rolesService.findOne(id);
   }
 }

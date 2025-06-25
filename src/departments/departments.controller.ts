@@ -1,22 +1,22 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { DepartmentsService } from './departments.service';
 
 @Controller('departments')
 export class DepartmentsController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly departmentsService: DepartmentsService) {}
 
   @Post()
   async create(@Body() body: { name: string }) {
-    return this.prisma.department.create({ data: { name: body.name } });
+    return this.departmentsService.create(body.name);
   }
 
   @Get()
   async findAll() {
-    return this.prisma.department.findMany();
+    return this.departmentsService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.prisma.department.findUnique({ where: { id } });
+    return this.departmentsService.findOne(id);
   }
 }

@@ -51,6 +51,8 @@ export class UsersController {
     @Query('companyId') companyId?: string,
     @Query('status') status?: string
   ) {
-    return this.usersService.findAll({ departmentId, roleId, companyId, status });
+    const users = await this.usersService.findAll({ departmentId, roleId, companyId, status });
+    // Do NOT override department/role with just the id, keep the full object
+    return users;
   }
 }

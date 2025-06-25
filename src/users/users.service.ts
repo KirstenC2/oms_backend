@@ -21,11 +21,23 @@ export class UsersService {
       if (filter.companyId) where.company_id = filter.companyId;
       if (filter.status) where.status = filter.status;
     }
-    return this.prisma.user.findMany({ where });
+    return this.prisma.user.findMany({
+      where,
+      include: {
+        department: true,
+        role: true,
+      },
+    });
   }
 
   findOne(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        department: true,
+        role: true,
+      },
+    });
   }
 
   create(data: { email: string; name: string; departmentId?: string; roleId?: string }): Promise<User> {

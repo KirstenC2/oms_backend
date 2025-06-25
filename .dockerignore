@@ -30,6 +30,5 @@
 **/values.dev.yaml
 **/build
 **/dist
-**/prisma
 LICENSE
 README.md

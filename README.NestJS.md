@@ -1,5 +1,21 @@
 # NestJS
 
+## Module
+
+### What is Module?
+- a way to group the related features together
+- such as controller, services, providers, ...
+
+```
+@Module({
+  imports: [],        // <-- Other modules
+  controllers: [],    // <-- API handlers
+  providers: [],      // <-- Services & logic
+  exports: []         // <-- What this module shares with others
+})
+export class SomeModule {}
+```
+
 ## Prisma
 
 ### What is Prisma?

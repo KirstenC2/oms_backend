@@ -7,9 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Department {
+  id    String  @id @default(uuid())
+  name  String  @unique
+  users User[]
+}
+
+model Role {
+  id    String  @id @default(uuid())
+  name  String  @unique
+  users User[]
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  email          String   @unique
+  name           String
+  department     Department? @relation(fields: [department_id], references: [id])
+  department_id  String?
+  role            Role? @relation(fields: [role_id], references: [id])
+  role_id        String?
+  createdAt      DateTime @default(now())
 }

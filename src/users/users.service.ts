@@ -29,6 +29,18 @@ export class UsersService {
       },
     });
   }
+  
+  findOneByRoleId(roleId: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: {
+        role_id: roleId,
+      },
+      include: {
+        department: true,
+        role: true,
+      },
+    });
+  }
 
   findOne(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({

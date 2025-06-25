@@ -24,6 +24,11 @@ export class UsersController {
     });
   }
 
+  @Get(':role')
+  async findOneByRole(@Param('role') role: string) {
+    return  this.usersService.findOneByRoleId(role);
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);

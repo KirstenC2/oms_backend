@@ -18,6 +18,6 @@ export class DepartmentsService {
   }
 
   remove(id: string) {
-    return this.prisma.department.delete({ where: { id } });
+    return this.prisma.department.delete({ where: { id }});
   }
 }

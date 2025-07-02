@@ -16,4 +16,8 @@ export class RolesService {
   findOne(id: string) {
     return this.prisma.role.findUnique({ where: { id } });
   }
+
+  remove(id: string) {
+    return this.prisma.role.delete({ where: { id } });
+  }
 }

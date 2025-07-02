@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, Param, Put, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, Put, HttpCode, HttpStatus, Query, Delete } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
@@ -59,5 +59,15 @@ export class UsersController {
     const users = await this.usersService.findAll({ departmentId, roleId, companyId, status });
     // Do NOT override department/role with just the id, keep the full object
     return users;
+  }
+
+
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    const deleted = await this.usersService.remove(id);
+    if (!deleted) {
+      return { statusCode: HttpStatus.NOT_FOUND, message: 'User not found' };
+    }
+    return { statusCode: HttpStatus.OK, message: 'User deleted successfully' };
   }
 }

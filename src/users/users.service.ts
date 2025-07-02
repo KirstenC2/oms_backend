@@ -66,7 +66,7 @@ export class UsersService {
     return this.prisma.user.update({ where: { id }, data });
   }
 
-  delete(id: string): Promise<User> {
+  remove(id: string): Promise<User> {
     return this.prisma.user.delete({ where: { id } });
   }
 }

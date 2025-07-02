@@ -16,4 +16,8 @@ export class DepartmentsService {
   findOne(id: string) {
     return this.prisma.department.findUnique({ where: { id } });
   }
+
+  remove(id: string) {
+    return this.prisma.department.delete({ where: { id } });
+  }
 }

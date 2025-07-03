@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, User } from '@prisma/client';
+import { UserStatus } from '@prisma/client'; // Assuming you have an enum for user status
 
 interface UserFilter {
   departmentId?: string;
@@ -68,5 +69,38 @@ export class UsersService {
 
   remove(id: string): Promise<User> {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  deactivateUser(id: string): Promise<User> {
+    // Update the user's status to INACTIVE
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        status: UserStatus.INACTIVE, 
+      },
+    });
+  }
+
+  activateUser(id: string): Promise<User> {
+    // Update the user's status to ACTIVE
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        status: UserStatus.ACTIVE, 
+      },
+    });
+  }
+
+  async updateUserStatus(id: string, newStatus: UserStatus): Promise<User> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        status: newStatus,
+      },
+    });
   }
 }

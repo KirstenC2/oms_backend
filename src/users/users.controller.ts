@@ -1,8 +1,9 @@
-import { Body, Controller, Post, Get, Param, Put, HttpCode, HttpStatus, Query, Delete } from '@nestjs/common';
+import { Body, Controller, Post, Get, Param, Put, HttpCode, HttpStatus, Query, Delete, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { NotFoundException } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
@@ -47,6 +48,26 @@ export class UsersController {
       return { statusCode: HttpStatus.NOT_FOUND, message: 'User not found' };
     }
     return { statusCode: HttpStatus.OK, data: updated };
+  }
+
+  @Patch(':id/deactivate') // <-- ENSURE THIS LINE IS EXACTLY LIKE THIS
+  @HttpCode(HttpStatus.OK) // Optional: Set HTTP status code for successful deactivation
+  async deactivateUser(@Param('id') id: string) {
+    const user = await this.usersService.deactivateUser(id);
+    if (!user) { // Good practice: handle if service returns null/undefined (though service throws NotFoundException)
+        throw new NotFoundException(`User with ID ${id} not found after deactivation attempt.`);
+    }
+    return user; // Cast to DTO if necessary
+  }
+
+  @Patch(':id/activate') 
+  @HttpCode(HttpStatus.OK) 
+  async activateUser(@Param('id') id: string) {
+    const user = await this.usersService.activateUser(id);
+    if (!user) { // Good practice: handle if service returns null/undefined (though service throws NotFoundException)
+        throw new NotFoundException(`User with ID ${id} not found after activation attempt.`);
+    }
+    return user; // Cast to DTO if necessary
   }
 
   @Get()

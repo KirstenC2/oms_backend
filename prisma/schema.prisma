@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+}
+
 model Department {
   id    String  @id @default(uuid())
   name  String  @unique
@@ -27,5 +34,6 @@ model User {
   department_id  String?
   role            Role? @relation(fields: [role_id], references: [id])
   role_id        String?
+  status         UserStatus @default(ACTIVE)  
   createdAt      DateTime @default(now())
 }

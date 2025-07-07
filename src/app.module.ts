@@ -6,9 +6,10 @@ import { PrismaModule } from './prisma/prisma.module';
 import { DepartmentsModule } from './departments/departments.module';
 import { RolesModule } from './roles/roles.module';
 import { DepartmentsService } from './departments/departments.service';
+import { LeaveRequestModule } from './leave-request/leave-request.module';
 
 @Module({
-  imports: [UsersModule, PrismaModule, DepartmentsModule, RolesModule],
+  imports: [UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule],
   controllers: [AppController],
   providers: [AppService, DepartmentsService],
 })

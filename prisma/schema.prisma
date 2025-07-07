@@ -14,6 +14,15 @@ enum UserStatus {
   SUSPENDED
 }
 
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+
 model Department {
   id    String  @id @default(uuid())
   name  String  @unique
@@ -36,4 +45,20 @@ model User {
   role_id        String?
   status         UserStatus @default(ACTIVE)  
   createdAt      DateTime @default(now())
+
+  leaveRequests  LeaveRequest[]
 }
+model LeaveRequest {
+  id          String   @id @default(uuid())
+  employee    User     @relation(fields: [employeeId], references: [id])
+  employeeId  String
+  type        String
+  startDate   DateTime
+  endDate     DateTime
+  reason      String?
+  status      LeaveStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  reviewedBy  String?    // approver's user id
+  reviewedAt  DateTime?
+}
+

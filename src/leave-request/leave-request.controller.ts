@@ -8,6 +8,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { LeaveRequestService } from './leave-request.service';
+import { request } from 'http';
 
 @Controller('leave-requests')
 export class LeaveRequestController {
@@ -28,6 +29,11 @@ export class LeaveRequestController {
     return this.service.findByUser(userId);
   }
 
+  @Get(':requestId/details')
+  findOne(@Param('requestId') requestId: string) {
+    return this.service.findByRequestId(requestId);
+  }
+
   @Patch(':id/approve')
   approve(@Param('id') id: string, @Body('reviewerId') reviewerId: string) {
     return this.service.approve(id, reviewerId);
@@ -39,7 +45,7 @@ export class LeaveRequestController {
   }
 
   @Patch(':id/cancel')
-  cancel(@Param('id') id: string, @Body('userId') userId: string) {
-    return this.service.cancel(id, userId);
+  cancel(@Param('id') id: string) {
+    return this.service.cancel(id);
   }
 }

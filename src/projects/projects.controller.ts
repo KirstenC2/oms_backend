@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { Post, Body, Get } from '@nestjs/common';
+import { Post, Body, Get, Param, Delete } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -29,4 +29,14 @@ export class ProjectsController {
       findAll() {
         return this.projectsService.findAll();
       }
+
+    @Get(':id')
+    findOne(@Param('id') id: string) {
+        return this.projectsService.findOne(id);
+    }   
+
+    @Delete(':id')
+    removeOne(@Param('id') id: string) {
+        return this.projectsService.remove(id);
+    }
 }

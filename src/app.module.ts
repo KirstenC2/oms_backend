@@ -7,10 +7,12 @@ import { DepartmentsModule } from './departments/departments.module';
 import { RolesModule } from './roles/roles.module';
 import { DepartmentsService } from './departments/departments.service';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
+import { ProjectsModule } from './projects/projects.module';
+import { ProjectsService } from './projects/projects.service';
 
 @Module({
-  imports: [UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule],
+  imports: [PrismaModule, UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule, ProjectsModule],
   controllers: [AppController],
-  providers: [AppService, DepartmentsService],
+  providers: [AppService, DepartmentsService, ProjectsService],
 })
 export class AppModule {}

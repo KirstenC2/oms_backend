@@ -23,6 +23,22 @@ enum LeaveStatus {
 }
 
 
+enum ProjectStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
+enum TaskStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  ON_HOLD
+  CANCELLED
+}
+
 model Department {
   id    String  @id @default(uuid())
   name  String  @unique
@@ -47,6 +63,8 @@ model User {
   createdAt      DateTime @default(now())
 
   leaveRequests  LeaveRequest[]
+  managedProjects Project[] @relation("ProjectManager")
+  assignedTasks   Task[]    @relation("TaskAssignee")
 }
 model LeaveRequest {
   id          String   @id @default(uuid())
@@ -62,3 +80,47 @@ model LeaveRequest {
   reviewedAt  DateTime?
 }
 
+
+// --- New Project Model ---
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  startDate   DateTime      @map("start_date")
+  endDate     DateTime      @map("end_date")
+  status      ProjectStatus @default(NOT_STARTED)
+
+  // Relation to the User who manages this project
+  managerId   String?                            // Foreign key for the project manager
+  manager     User?         @relation("ProjectManager", fields: [managerId], references: [id])
+
+  tasks       Task[]        // A project can have many tasks (one-to-many)
+
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@map("projects") // Maps to 'projects' table in your database
+}
+
+// --- New Task Model ---
+model Task {
+  id            String     @id @default(uuid())
+  name          String
+  description   String?
+  startDate     DateTime   @map("start_date")
+  endDate       DateTime   @map("end_date")
+  status        TaskStatus @default(NOT_STARTED)
+
+  // Relation to the parent Project
+  projectId     String                           // Foreign key for the parent project
+  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade) // Task belongs to a Project
+
+  // Relation to the User assigned to this task
+  assignedToId  String?                          // Foreign key for the assigned user
+  assignedTo    User?      @relation("TaskAssignee", fields: [assignedToId], references: [id])
+
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  @@map("tasks") // Maps to 'tasks' table in your database
+}

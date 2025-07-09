@@ -74,4 +74,32 @@ export class ProjectsService {
         }
         return project;
     }
+
+    findTasksByProjectId(id: string) {
+        return this.prisma.task.findMany({
+            where: { projectId: id },
+            include: {
+                assignedTo: true, // Include user details if assigned
+            },
+        });
+    }
+
+    async createTask(projectId: string, taskData: any) {
+        const task = plainToInstance(CreateProjectsDto, taskData);
+        return validate(task).then(errors => {
+            if (errors.length > 0) {
+                throw new Error('Validation failed');
+            }
+            return this.prisma.task.create({
+                data: {
+                    name: task.name,
+                    description: task.description,
+                    startDate: task.startDate,
+                    endDate: task.endDate,
+                    status: task.status,
+                    projectId: projectId,
+                },
+            });
+        });
+    }
 }

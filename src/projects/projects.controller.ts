@@ -39,4 +39,15 @@ export class ProjectsController {
     removeOne(@Param('id') id: string) {
         return this.projectsService.remove(id);
     }
+
+    @Post(':id/tasks')
+    async createTask(@Param('id') id: string, @Body() body: any) {
+      return this.projectsService.createTask(id, body);
+    }
+
+    @Get(':id/tasks')
+    async findTasksByProjectId(@Param('id') id: string) {
+      return this.projectsService.findTasksByProjectId(id);
+    }
+
 }

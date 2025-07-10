@@ -5,10 +5,11 @@ import { validate } from 'class-validator';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProjectsDto } from './dto/create-projects.dto';
 import { Body } from '@nestjs/common';
+import { TaskStatus } from '@prisma/client'; // Import Prisma's generated enum for task status
 @Injectable()
 export class ProjectsService {
-    constructor(private readonly prisma: PrismaService) {}
-    
+    constructor(private readonly prisma: PrismaService) { }
+
     createProject(@Body() createProjectsDto: CreateProjectsDto) {
         const projectData = plainToInstance(CreateProjectsDto, createProjectsDto);
         return validate(projectData).then(errors => {
@@ -47,7 +48,7 @@ export class ProjectsService {
         }
         return project;
     }
-    update(id: string, updateProjectDto: CreateProjectsDto) {   
+    update(id: string, updateProjectDto: CreateProjectsDto) {
         const projectData = plainToInstance(CreateProjectsDto, updateProjectDto);
         return validate(projectData).then(errors => {
             if (errors.length > 0) {
@@ -73,5 +74,49 @@ export class ProjectsService {
             throw new NotFoundException(`Project with ID ${id} not found`);
         }
         return project;
+    }
+
+    findTasksByProjectId(id: string) {
+        return this.prisma.task.findMany({
+            where: { projectId: id },
+            include: {
+                assignedTo: true, // Include user details if assigned
+            },
+        });
+    }
+
+    async createTask(projectId: string, taskData: any) {
+        const task = plainToInstance(CreateProjectsDto, taskData);
+        return validate(task).then(errors => {
+            if (errors.length > 0) {
+                throw new Error('Validation failed');
+            }
+            return this.prisma.task.create({
+                data: {
+                    name: task.name,
+                    description: task.description,
+                    startDate: task.startDate,
+                    endDate: task.endDate,
+                    status: task.status,
+                    projectId: projectId,
+                },
+            });
+        });
+    }
+
+    async updateTaskStatus(taskId: string, status: string) {
+        const task = await this.prisma.task.findUnique({
+            where: { id: taskId },
+        });
+        if (!task) {
+            throw new NotFoundException(`Task with ID ${taskId} not found`);
+        }
+
+        return this.prisma.task.update({
+            where: { id: taskId },
+            data: {
+                status: status as TaskStatus,
+            },
+        });
     }
 }

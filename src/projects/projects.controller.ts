@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Patch } from '@nestjs/common';
 import { Post, Body, Get, Param, Delete } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { plainToInstance } from 'class-transformer';
@@ -39,4 +39,20 @@ export class ProjectsController {
     removeOne(@Param('id') id: string) {
         return this.projectsService.remove(id);
     }
+
+    @Post(':id/tasks')
+    async createTask(@Param('id') id: string, @Body() body: any) {
+      return this.projectsService.createTask(id, body);
+    }
+
+    @Get(':id/tasks')
+    async findTasksByProjectId(@Param('id') id: string) {
+      return this.projectsService.findTasksByProjectId(id);
+    }
+
+    @Patch('tasks/:taskId/status')
+    async updateTaskStatus(@Param('taskId') taskId: string, @Body('status') status: string) {
+        return this.projectsService.updateTaskStatus(taskId, status);
+    }
+
 }

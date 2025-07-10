@@ -9,9 +9,10 @@ import { DepartmentsService } from './departments/departments.service';
 import { LeaveRequestModule } from './leave-request/leave-request.module';
 import { ProjectsModule } from './projects/projects.module';
 import { ProjectsService } from './projects/projects.service';
+import { IssuesModule } from './issues/issues.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule, ProjectsModule],
+  imports: [PrismaModule, UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule, ProjectsModule, IssuesModule],
   controllers: [AppController],
   providers: [AppService, DepartmentsService, ProjectsService],
 })

@@ -32,6 +32,7 @@ export class ProjectsService {
             include: {
                 manager: true, // Include manager details
                 tasks: true, // Include tasks related to the project
+                issues: true, // Include issues related to the project
             },
         });
     }
@@ -40,7 +41,9 @@ export class ProjectsService {
             where: { id },
             include: {
                 manager: true, // Include manager details
-                tasks: true, // Include tasks related to the project
+                tasks: true, // Include tasks related
+                issues: true, // Include issues related
+                //  to the project
             },
         });
         if (!project) {
@@ -80,10 +83,12 @@ export class ProjectsService {
         return this.prisma.task.findMany({
             where: { projectId: id },
             include: {
-                assignedTo: true, // Include user details if assigned
+                assignedTo: true, // Include user 
+                // details if assigned
             },
         });
     }
+    
 
     async createTask(projectId: string, taskData: any) {
         const task = plainToInstance(CreateProjectsDto, taskData);

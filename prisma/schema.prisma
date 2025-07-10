@@ -38,6 +38,19 @@ enum TaskStatus {
   ON_HOLD
   CANCELLED
 }
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
 
 model Department {
   id    String  @id @default(uuid())
@@ -95,6 +108,7 @@ model Project {
   manager     User?         @relation("ProjectManager", fields: [managerId], references: [id])
 
   tasks       Task[]        // A project can have many tasks (one-to-many)
+  issues      Issue[]  
 
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -114,7 +128,8 @@ model Task {
   // Relation to the parent Project
   projectId     String                           // Foreign key for the parent project
   project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade) // Task belongs to a Project
-
+  
+  
   // Relation to the User assigned to this task
   assignedToId  String?                          // Foreign key for the assigned user
   assignedTo    User?      @relation("TaskAssignee", fields: [assignedToId], references: [id])
@@ -123,4 +138,21 @@ model Task {
   updatedAt     DateTime   @updatedAt @map("updated_at")
 
   @@map("tasks") // Maps to 'tasks' table in your database
+}
+
+model Issue {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  status      IssueStatus   @default(OPEN)
+  priority    IssuePriority @default(MEDIUM)
+
+  // Relation to the Project it belongs to
+  projectId   String
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@map("issues") // Optional: map to 'issues' table in database
 }

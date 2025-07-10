@@ -5,10 +5,11 @@ import { validate } from 'class-validator';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProjectsDto } from './dto/create-projects.dto';
 import { Body } from '@nestjs/common';
+import { TaskStatus } from '@prisma/client'; // Import Prisma's generated enum for task status
 @Injectable()
 export class ProjectsService {
-    constructor(private readonly prisma: PrismaService) {}
-    
+    constructor(private readonly prisma: PrismaService) { }
+
     createProject(@Body() createProjectsDto: CreateProjectsDto) {
         const projectData = plainToInstance(CreateProjectsDto, createProjectsDto);
         return validate(projectData).then(errors => {
@@ -47,7 +48,7 @@ export class ProjectsService {
         }
         return project;
     }
-    update(id: string, updateProjectDto: CreateProjectsDto) {   
+    update(id: string, updateProjectDto: CreateProjectsDto) {
         const projectData = plainToInstance(CreateProjectsDto, updateProjectDto);
         return validate(projectData).then(errors => {
             if (errors.length > 0) {
@@ -100,6 +101,22 @@ export class ProjectsService {
                     projectId: projectId,
                 },
             });
+        });
+    }
+
+    async updateTaskStatus(taskId: string, status: string) {
+        const task = await this.prisma.task.findUnique({
+            where: { id: taskId },
+        });
+        if (!task) {
+            throw new NotFoundException(`Task with ID ${taskId} not found`);
+        }
+
+        return this.prisma.task.update({
+            where: { id: taskId },
+            data: {
+                status: status as TaskStatus,
+            },
         });
     }
 }

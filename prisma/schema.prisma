@@ -22,6 +22,14 @@ enum LeaveStatus {
   CANCELLED
 }
 
+enum QuotationStatus {
+  DRAFT         // 草稿中
+  SENT          // 已送出
+  NEGOTIATING   // 客戶要求修改中
+  FINALIZED     // 客戶確認
+  CANCELLED     // 作廢
+}
+
 
 enum ProjectStatus {
   NOT_STARTED
@@ -92,6 +100,98 @@ model LeaveRequest {
   reviewedBy  String?    // approver's user id
   reviewedAt  DateTime?
 }
+model Client {
+  id        String              @id @default(cuid())
+  name      String
+  email     String?
+  phone     String?
+  company   String?             // 客戶所屬公司（可選）
+  notes     String?
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  quotations ClientQuotation[]  // One-to-many
+}
+
+model Vendor {
+  id          String               @id @default(cuid())
+  name        String
+  contactName String?             // 聯絡人姓名
+  email       String?
+  phone       String?
+  company     String?             // 公司名稱（若有）
+  address     String?
+  notes       String?             // 備註欄
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  quotations  VendorQuotation[]   // 與 VendorQuotation 的一對多關聯
+}
+
+model VendorQuotation {
+  id              String              @id @default(cuid())
+  referenceCode   String              @unique
+  vendorId      String
+  projectId       String
+  status          QuotationStatus     @default(DRAFT)
+  totalAmount     Float
+  notes           String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  vendor        Vendor            @relation(fields: [vendorId], references: [id])
+  project         Project             @relation(fields: [projectId], references: [id])
+  items           VendorQuotationItem[]
+}
+
+model ClientQuotation {
+  id              String              @id @default(cuid())
+  referenceCode   String              @unique                     // 如 Q-2025-0001
+  clientId        String
+  projectId       String
+  version         Int                 @default(1)
+  status          QuotationStatus     @default(DRAFT)
+  validUntil      DateTime?
+  totalAmount     Float
+  notes           String?
+  confirmed       Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  client          Client              @relation(fields: [clientId], references: [id])
+  project         Project             @relation(fields: [projectId], references: [id])
+  items           ClientQuotationItem[]
+}
+
+model ClientQuotationItem {
+  id                 String                @id @default(cuid())
+  clientQuotationId  String
+  name               String
+  description        String?
+  quantity           Int
+  unitPrice          Float
+  discount           Float                 @default(0)
+  total              Float
+
+  clientQuotation    ClientQuotation       @relation(fields: [clientQuotationId], references: [id])
+  vendorItems        VendorQuotationItem[] @relation("ClientVendorLink") // optional: 可以對應多個供應商報價
+}
+
+model VendorQuotationItem {
+  id                 String                @id @default(cuid())
+  vendorQuotationId  String
+  name               String
+  description        String?
+  quantity           Int
+  unitPrice          Float
+  total              Float
+
+  vendorQuotation    VendorQuotation       @relation(fields: [vendorQuotationId], references: [id])
+  
+  // 與 ClientQuotationItem 建立多對多關聯（有些項目會對應到多個客戶報價項目）
+  linkedClientItems  ClientQuotationItem[] @relation("ClientVendorLink")
+}
+
 
 
 // --- New Project Model ---
@@ -109,6 +209,10 @@ model Project {
 
   tasks       Task[]        // A project can have many tasks (one-to-many)
   issues      Issue[]  
+
+    clientQuotations ClientQuotation[]
+  vendorQuotations VendorQuotation[]
+
 
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -128,8 +232,7 @@ model Task {
   // Relation to the parent Project
   projectId     String                           // Foreign key for the parent project
   project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade) // Task belongs to a Project
-  
-  
+
   // Relation to the User assigned to this task
   assignedToId  String?                          // Foreign key for the assigned user
   assignedTo    User?      @relation("TaskAssignee", fields: [assignedToId], references: [id])
@@ -156,3 +259,6 @@ model Issue {
 
   @@map("issues") // Optional: map to 'issues' table in database
 }
+
+
+

@@ -13,9 +13,10 @@ import { IssuesModule } from './issues/issues.module';
 import { QuotationsModule } from './quotations/quotations.module';
 import { QuotationService } from './quotations/quotations.service';
 import { ClientModule } from './client/client.module';
+import { VendorsModule } from './vendors/vendors.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule, ProjectsModule, IssuesModule, QuotationsModule, ClientModule],
+  imports: [PrismaModule, UsersModule, PrismaModule, DepartmentsModule, RolesModule, LeaveRequestModule, ProjectsModule, IssuesModule, QuotationsModule, ClientModule, VendorsModule],
   controllers: [AppController],
   providers: [AppService, DepartmentsService, ProjectsService, QuotationService],
 })

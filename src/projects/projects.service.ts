@@ -33,6 +33,7 @@ export class ProjectsService {
                 manager: true, // Include manager details
                 tasks: true, // Include tasks related to the project
                 issues: true, // Include issues related to the project
+                // client: true, // Include client details
             },
         });
     }
@@ -43,6 +44,7 @@ export class ProjectsService {
                 manager: true, // Include manager details
                 tasks: true, // Include tasks related
                 issues: true, // Include issues related
+                client: true, // Include client details
                 //  to the project
             },
         });
